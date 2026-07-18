@@ -1,0 +1,21 @@
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/lib/api";
+import { Job } from "@/types/job";
+
+interface JobDetailsResponse {
+  job: Job;
+  similar: Job[];
+}
+
+export function useJobDetails(jobId: string) {
+  return useQuery({
+    queryKey: ["job", jobId],
+    queryFn: async () => {
+      const { data } = await api.get<JobDetailsResponse>(`/api/jobs/${jobId}`);
+      return data;
+    },
+    enabled: !!jobId,
+  });
+}
