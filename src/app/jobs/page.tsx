@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
+import { JobsExplorer } from "@/components/jobs/JobsExplorer";
 import { JobGrid } from "@/components/jobs/JobGrid";
 
 export const metadata: Metadata = {
   title: "Browse Jobs — TalentBridge",
-  description: "Explore the latest job openings on TalentBridge.",
+  description: "Search and filter the latest job openings on TalentBridge.",
 };
 
 export default function JobsPage() {
@@ -14,11 +16,14 @@ export default function JobsPage() {
           Browse jobs
         </h1>
         <p className="mt-2 text-slate">
-          Search and filters land next milestone — here are the latest active
-          postings.
+          Search, filter, and sort to find the right opportunity.
         </p>
       </div>
-      <JobGrid />
+      <Suspense
+        fallback={<JobGrid jobs={undefined} isLoading isError={false} />}
+      >
+        <JobsExplorer />
+      </Suspense>
     </main>
   );
 }

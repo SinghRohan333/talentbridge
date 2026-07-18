@@ -1,12 +1,14 @@
-"use client";
-
-import { useJobs, JobsQueryParams } from "@/hooks/useJobs";
+import { Job } from "@/types/job";
 import { JobCard } from "./JobCard";
 import { JobCardSkeleton } from "./JobCardSkeleton";
 
-export function JobGrid({ params = {} }: { params?: JobsQueryParams }) {
-  const { data, isLoading, isError } = useJobs(params);
+interface JobGridProps {
+  jobs: Job[] | undefined;
+  isLoading: boolean;
+  isError: boolean;
+}
 
+export function JobGrid({ jobs, isLoading, isError }: JobGridProps) {
   if (isError) {
     return (
       <p className="py-16 text-center text-sm text-slate">
@@ -15,10 +17,10 @@ export function JobGrid({ params = {} }: { params?: JobsQueryParams }) {
     );
   }
 
-  if (!isLoading && data?.jobs.length === 0) {
+  if (!isLoading && jobs?.length === 0) {
     return (
       <p className="py-16 text-center text-sm text-slate">
-        No jobs match right now — check back soon.
+        No jobs match your filters — try adjusting or clearing them.
       </p>
     );
   }
@@ -27,7 +29,7 @@ export function JobGrid({ params = {} }: { params?: JobsQueryParams }) {
     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {isLoading
         ? Array.from({ length: 8 }).map((_, i) => <JobCardSkeleton key={i} />)
-        : data?.jobs.map((job) => <JobCard key={job._id} job={job} />)}
+        : jobs?.map((job) => <JobCard key={job._id} job={job} />)}
     </div>
   );
 }
