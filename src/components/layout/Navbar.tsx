@@ -7,6 +7,7 @@ import { Menu, X, LogOut } from "lucide-react";
 import { useAuth } from "@/providers/AuthProvider";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
+import toast from "react-hot-toast";
 
 export function Navbar() {
   const { user, logout } = useAuth();
@@ -28,6 +29,8 @@ export function Navbar() {
 
   const handleLogout = async () => {
     await logout();
+    toast.success("Logged Out!");
+
     setIsOpen(false);
   };
 

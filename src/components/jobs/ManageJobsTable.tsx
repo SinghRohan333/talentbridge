@@ -45,6 +45,7 @@ export function ManageJobsTable() {
           ? { ...prev, jobs: prev.jobs.filter((j) => j._id !== jobId) }
           : prev,
       );
+      queryClient.invalidateQueries({ queryKey: ["jobs"] });
     } catch (err) {
       toast.error(getErrorMessage(err, "Could not delete job"));
     } finally {
