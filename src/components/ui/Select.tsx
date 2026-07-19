@@ -2,7 +2,7 @@ import { SelectHTMLAttributes, forwardRef } from "react";
 import { cn } from "@/lib/utils";
 
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
-  label: string;
+  label?: string;
   error?: string;
 }
 
@@ -11,9 +11,11 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     const inputId = id ?? props.name;
     return (
       <div className="flex w-full flex-col gap-1.5">
-        <label htmlFor={inputId} className="text-sm font-medium text-ink">
-          {label}
-        </label>
+        {label && (
+          <label htmlFor={inputId} className="text-sm font-medium text-ink">
+            {label}
+          </label>
+        )}
         <select
           ref={ref}
           id={inputId}
