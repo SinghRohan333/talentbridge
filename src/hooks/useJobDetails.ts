@@ -7,6 +7,8 @@ import { Job } from "@/types/job";
 interface JobDetailsResponse {
   job: Job;
   similar: Job[];
+  isSaved: boolean;
+  hasApplied: boolean;
 }
 
 export function useJobDetails(jobId: string) {
