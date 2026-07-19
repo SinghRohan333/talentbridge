@@ -1,7 +1,7 @@
 "use client";
 
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
-import { PostJobForm } from "@/components/jobs/PostJobForm";
+import { JobForm } from "@/components/jobs/JobForm";
 
 export function PostJobPageContent() {
   return (
@@ -12,11 +12,11 @@ export function PostJobPageContent() {
             Post a job
           </h1>
           <p className="mt-2 text-slate">
-            Fill in the details below — you can view or delete it anytime from
+            Fill in the details below — you can edit or delete it anytime from
             Manage Jobs.
           </p>
         </div>
-        <PostJobForm />
+        <JobForm mode="create" />
       </main>
     </ProtectedRoute>
   );

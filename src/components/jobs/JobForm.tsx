@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/Textarea";
 import { Select } from "@/components/ui/Select";
 import { TagInput } from "@/components/ui/TagInput";
 import { Button } from "@/components/ui/Button";
+import { Job } from "@/types/job";
 
 const typeOptions = [
   { value: "full-time", label: "Full-time" },
@@ -32,8 +33,61 @@ const experienceOptions = [
   { value: "senior", label: "Senior level" },
   { value: "lead", label: "Lead / Manager" },
 ];
+const statusOptions = [
+  { value: "active", label: "Active" },
+  { value: "closed", label: "Closed" },
+  { value: "draft", label: "Draft" },
+];
 
-export function PostJobForm() {
+interface JobFormProps {
+  mode: "create" | "edit";
+  job?: Job;
+}
+
+function buildDefaults(job?: Job): JobFormValues {
+  if (!job) {
+    return {
+      title: "",
+      shortDescription: "",
+      description: "",
+      category: "",
+      type: "full-time",
+      locationType: "on-site",
+      location: "",
+      salaryMin: "",
+      salaryMax: "",
+      skills: [],
+      requirementsText: "",
+      benefitsText: "",
+      experienceLevel: "mid",
+      applicationDeadline: "",
+      companyLogoUrl: "",
+      status: "active",
+    };
+  }
+  return {
+    title: job.title,
+    shortDescription: job.shortDescription,
+    description: job.description,
+    category: job.category,
+    type: job.type,
+    locationType: job.locationType,
+    location: job.location,
+    salaryMin: job.salaryMin != null ? String(job.salaryMin) : "",
+    salaryMax: job.salaryMax != null ? String(job.salaryMax) : "",
+    skills: job.skills,
+    requirementsText: job.requirements.join("\n"),
+    benefitsText: job.benefits.join("\n"),
+    experienceLevel: job.experienceLevel,
+    applicationDeadline: job.applicationDeadline
+      ? job.applicationDeadline.slice(0, 10)
+      : "",
+    companyLogoUrl: job.company.logo ?? "",
+    status: job.status === "flagged" ? "active" : job.status,
+  };
+}
+
+export function JobForm({ mode, job }: JobFormProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -45,12 +99,7 @@ export function PostJobForm() {
     formState: { errors },
   } = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
-    defaultValues: {
-      type: "full-time",
-      locationType: "on-site",
-      experienceLevel: "mid",
-      skills: [],
-    },
+    defaultValues: buildDefaults(job),
   });
 
   const onSubmit = async (values: JobFormValues) => {
@@ -82,15 +131,30 @@ export function PostJobForm() {
           ? new Date(values.applicationDeadline).toISOString()
           : undefined,
         companyLogoUrl: values.companyLogoUrl || undefined,
+        ...(mode === "edit" ? { status: values.status } : {}),
       };
 
-      const { data } = await api.post("/api/jobs", payload);
-      queryClient.invalidateQueries({ queryKey: ["my-jobs"] });
-      queryClient.invalidateQueries({ queryKey: ["jobs"] });
-      toast.success("Job posted successfully");
-      router.push(`/jobs/${data.job._id}`);
+      if (mode === "create") {
+        const { data } = await api.post("/api/jobs", payload);
+        queryClient.invalidateQueries({ queryKey: ["my-jobs"] });
+        queryClient.invalidateQueries({ queryKey: ["jobs"] });
+        toast.success("Job posted successfully");
+        router.push(`/jobs/${data.job._id}`);
+      } else if (job) {
+        await api.patch(`/api/jobs/${job._id}`, payload);
+        queryClient.invalidateQueries({ queryKey: ["my-jobs"] });
+        queryClient.invalidateQueries({ queryKey: ["jobs"] });
+        queryClient.invalidateQueries({ queryKey: ["job", job._id] });
+        toast.success("Job updated");
+        router.push("/jobs/manage");
+      }
     } catch (err) {
-      toast.error(getErrorMessage(err, "Could not post job"));
+      toast.error(
+        getErrorMessage(
+          err,
+          mode === "create" ? "Could not post job" : "Could not update job",
+        ),
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -98,6 +162,25 @@ export function PostJobForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
+      {mode === "edit" && (
+        <div className="rounded-2xl border border-line bg-white/60 p-6 sm:p-8">
+          <h2 className="mb-5 font-display text-lg font-semibold text-ink">
+            Status
+          </h2>
+          <Select
+            label="Job status"
+            error={errors.status?.message}
+            {...register("status")}
+          >
+            {statusOptions.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </Select>
+        </div>
+      )}
+
       <div className="rounded-2xl border border-line bg-white/60 p-6 sm:p-8">
         <h2 className="mb-5 font-display text-lg font-semibold text-ink">
           Basics
@@ -270,7 +353,7 @@ export function PostJobForm() {
           fullWidth
           className="sm:w-auto sm:px-8"
         >
-          Post Job
+          {mode === "create" ? "Post Job" : "Save Changes"}
         </Button>
       </div>
     </form>
