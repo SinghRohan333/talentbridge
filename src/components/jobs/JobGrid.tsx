@@ -6,9 +6,15 @@ interface JobGridProps {
   jobs: Job[] | undefined;
   isLoading: boolean;
   isError: boolean;
+  emptyMessage?: string;
 }
 
-export function JobGrid({ jobs, isLoading, isError }: JobGridProps) {
+export function JobGrid({
+  jobs,
+  isLoading,
+  isError,
+  emptyMessage = "No jobs match your filters — try adjusting or clearing them.",
+}: JobGridProps) {
   if (isError) {
     return (
       <p className="py-16 text-center text-sm text-slate">
@@ -19,9 +25,7 @@ export function JobGrid({ jobs, isLoading, isError }: JobGridProps) {
 
   if (!isLoading && jobs?.length === 0) {
     return (
-      <p className="py-16 text-center text-sm text-slate">
-        No jobs match your filters — try adjusting or clearing them.
-      </p>
+      <p className="py-16 text-center text-sm text-slate">{emptyMessage}</p>
     );
   }
 
