@@ -1,16 +1,30 @@
-export default function Home() {
+import type { Metadata } from "next";
+import { Hero } from "@/components/home/Hero";
+import { FeaturedCategories } from "@/components/home/FeaturedCategories";
+import { StatsBand } from "@/components/home/StatsBand";
+import { FeaturedJobs } from "@/components/home/FeaturedJobs";
+import { HowItWorks } from "@/components/home/HowItWorks";
+import { Features } from "@/components/home/Features";
+import { FAQ } from "@/components/home/FAQ";
+import { NewsletterCTA } from "@/components/home/NewsletterCTA";
+
+export const metadata: Metadata = {
+  title: "TalentBridge — AI-Powered Job Board",
+  description:
+    "Find your next role or hire your next great employee, powered by AI matching.",
+};
+
+export default function HomePage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center">
-      <span className="rounded-full border border-line px-3 py-1 text-xs font-medium uppercase tracking-wide text-slate">
-        Scaffold check
-      </span>
-      <h1 className="font-display text-4xl font-semibold text-ink sm:text-5xl">
-        Talent<span className="text-signal">Bridge</span>
-      </h1>
-      <p className="max-w-md font-body text-slate">
-        Frontend scaffold is wired up — Tailwind v4 tokens, fonts, and providers
-        are live. Real pages start next milestone.
-      </p>
+    <main>
+      <Hero />
+      <FeaturedCategories />
+      <StatsBand />
+      <FeaturedJobs />
+      <HowItWorks />
+      <Features />
+      <FAQ />
+      <NewsletterCTA />
     </main>
   );
 }
