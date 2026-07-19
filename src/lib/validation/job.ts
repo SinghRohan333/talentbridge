@@ -8,6 +8,7 @@ const jobTypeEnum = z.enum([
 ]);
 const locationTypeEnum = z.enum(["on-site", "remote", "hybrid"]);
 const experienceLevelEnum = z.enum(["entry", "mid", "senior", "lead"]);
+const statusEnum = z.enum(["active", "closed", "draft"]);
 
 export const jobFormSchema = z
   .object({
@@ -33,6 +34,7 @@ export const jobFormSchema = z
     experienceLevel: experienceLevelEnum,
     applicationDeadline: z.string().trim().optional(),
     companyLogoUrl: z.string().trim().optional(),
+    status: statusEnum.optional(),
   })
   .refine(
     (data) =>
