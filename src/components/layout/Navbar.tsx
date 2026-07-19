@@ -7,7 +7,6 @@ import { Menu, X, LogOut } from "lucide-react";
 import { useAuth } from "@/providers/AuthProvider";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
-import toast from "react-hot-toast";
 
 export function Navbar() {
   const { user, logout } = useAuth();
@@ -21,18 +20,29 @@ export function Navbar() {
     { href: "/contact", label: "Contact Us" },
   ];
 
+  const seekerLinks = [
+    ...publicLinks,
+    { href: "/dashboard", label: "Dashboard" },
+    { href: "/saved-jobs", label: "Saved Jobs" },
+    { href: "/applications", label: "My Applications" },
+    { href: "/profile", label: "Profile" },
+  ];
+
   const employerLinks = [
     ...publicLinks,
     { href: "/jobs/post", label: "Post a Job" },
     { href: "/jobs/manage", label: "Manage Jobs" },
   ];
 
-  const navLinks = user?.role === "employer" ? employerLinks : publicLinks;
+  const navLinks =
+    user?.role === "seeker"
+      ? seekerLinks
+      : user?.role === "employer"
+        ? employerLinks
+        : publicLinks;
 
   const handleLogout = async () => {
     await logout();
-    toast.success("Logged Out!");
-
     setIsOpen(false);
   };
 
@@ -41,19 +51,19 @@ export function Navbar() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link
           href="/"
-          className="font-display text-xl font-semibold text-ink"
+          className="shrink-0 font-display text-xl font-semibold text-ink"
           onClick={() => setIsOpen(false)}
         >
           Talent<span className="text-signal">Bridge</span>
         </Link>
 
-        <nav className="hidden items-center gap-6 md:flex">
+        <nav className="hidden items-center gap-5 lg:flex">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               className={cn(
-                "text-sm font-medium transition-colors hover:text-signal",
+                "whitespace-nowrap text-sm font-medium transition-colors hover:text-signal",
                 pathname === link.href ? "text-signal" : "text-ink",
               )}
             >
@@ -62,10 +72,10 @@ export function Navbar() {
           ))}
         </nav>
 
-        <div className="hidden items-center gap-3 md:flex">
+        <div className="hidden items-center gap-3 lg:flex">
           {user ? (
             <>
-              <span className="text-sm text-slate">
+              <span className="whitespace-nowrap text-sm text-slate">
                 Hi, {user.name.split(" ")[0]}
               </span>
               <Button
@@ -97,7 +107,7 @@ export function Navbar() {
         <button
           type="button"
           onClick={() => setIsOpen((v) => !v)}
-          className="flex h-10 w-10 items-center justify-center rounded-lg text-ink md:hidden"
+          className="flex h-10 w-10 items-center justify-center rounded-lg text-ink lg:hidden"
           aria-label="Toggle menu"
         >
           {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -105,7 +115,7 @@ export function Navbar() {
       </div>
 
       {isOpen && (
-        <div className="border-t border-line bg-paper px-4 py-4 md:hidden">
+        <div className="border-t border-line bg-paper px-4 py-4 lg:hidden">
           <nav className="flex flex-col gap-1">
             {navLinks.map((link) => (
               <Link
@@ -126,9 +136,14 @@ export function Navbar() {
 
           <div className="mt-3 border-t border-line pt-3">
             {user ? (
-              <Button variant="outline" fullWidth onClick={handleLogout}>
-                <LogOut className="h-4 w-4" /> Log out
-              </Button>
+              <>
+                <p className="mb-2 px-1 text-sm text-slate">
+                  Signed in as {user.name}
+                </p>
+                <Button variant="outline" fullWidth onClick={handleLogout}>
+                  <LogOut className="h-4 w-4" /> Log out
+                </Button>
+              </>
             ) : (
               <div className="flex flex-col gap-2">
                 <Link
