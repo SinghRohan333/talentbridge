@@ -30,8 +30,10 @@ export function Navbar() {
 
   const employerLinks = [
     ...publicLinks,
+    { href: "/employer/dashboard", label: "Dashboard" },
     { href: "/jobs/post", label: "Post a Job" },
     { href: "/jobs/manage", label: "Manage Jobs" },
+    { href: "/employer/company", label: "Company Profile" },
   ];
 
   const navLinks =
