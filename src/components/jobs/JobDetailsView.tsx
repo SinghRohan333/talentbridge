@@ -1,13 +1,28 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
 import toast from "react-hot-toast";
-import { Briefcase, MapPin, Clock, Bookmark, ArrowLeft } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  Briefcase,
+  MapPin,
+  Clock,
+  Bookmark,
+  BookmarkCheck,
+  ArrowLeft,
+  CheckCircle2,
+} from "lucide-react";
+import { useAuth } from "@/providers/AuthProvider";
 import { useJobDetails } from "@/hooks/useJobDetails";
 import { formatSalaryRange } from "@/lib/format";
+import { getErrorMessage } from "@/lib/utils";
+import { api } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
 import { JobCard } from "@/components/jobs/JobCard";
+import { ApplyModal } from "@/components/jobs/ApplyModal";
 import { Job } from "@/types/job";
 
 const typeLabel: Record<Job["type"], string> = {
@@ -39,6 +54,11 @@ function JobDetailsSkeleton() {
 
 export function JobDetailsView({ jobId }: { jobId: string }) {
   const { data, isLoading, isError } = useJobDetails(jobId);
+  const { user } = useAuth();
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const [isSaving, setIsSaving] = useState(false);
+  const [isApplyOpen, setIsApplyOpen] = useState(false);
 
   if (isLoading) return <JobDetailsSkeleton />;
 
@@ -61,7 +81,42 @@ export function JobDetailsView({ jobId }: { jobId: string }) {
     );
   }
 
-  const { job, similar } = data;
+  const { job, similar, isSaved, hasApplied } = data;
+  const isSeeker = user?.role === "seeker";
+
+  const requireLogin = () => {
+    toast("Log in as a job seeker to do that", { icon: "🔒" });
+    router.push("/login");
+  };
+
+  const handleSaveToggle = async () => {
+    if (!user) return requireLogin();
+    if (!isSeeker)
+      return toast("Only job seeker accounts can save jobs", { icon: "🔒" });
+
+    setIsSaving(true);
+    try {
+      if (isSaved) {
+        await api.delete(`/api/saved-jobs/${job._id}`);
+        toast.success("Removed from saved jobs");
+      } else {
+        await api.post(`/api/saved-jobs/${job._id}`);
+        toast.success("Job saved");
+      }
+      queryClient.invalidateQueries({ queryKey: ["job", jobId] });
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Could not update saved jobs"));
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleApplyClick = () => {
+    if (!user) return requireLogin();
+    if (!isSeeker)
+      return toast("Only job seeker accounts can apply", { icon: "🔒" });
+    setIsApplyOpen(true);
+  };
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
@@ -110,25 +165,32 @@ export function JobDetailsView({ jobId }: { jobId: string }) {
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 sm:w-44 sm:shrink-0">
-            <Button
-              fullWidth
-              onClick={() =>
-                toast("Applications open in the next milestone", { icon: "🚧" })
-              }
-            >
-              Apply Now
-            </Button>
-            <Button
-              variant="outline"
-              fullWidth
-              onClick={() =>
-                toast("Saved jobs land in the next milestone", { icon: "🚧" })
-              }
-            >
-              <Bookmark className="h-4 w-4" /> Save
-            </Button>
-          </div>
+          {(!user || isSeeker) && (
+            <div className="flex flex-col gap-2 sm:w-44 sm:shrink-0">
+              {hasApplied ? (
+                <Button fullWidth disabled variant="outline">
+                  <CheckCircle2 className="h-4 w-4 text-signal" /> Applied
+                </Button>
+              ) : (
+                <Button fullWidth onClick={handleApplyClick}>
+                  Apply Now
+                </Button>
+              )}
+              <Button
+                variant="outline"
+                fullWidth
+                isLoading={isSaving}
+                onClick={handleSaveToggle}
+              >
+                {isSaved ? (
+                  <BookmarkCheck className="h-4 w-4 text-signal" />
+                ) : (
+                  <Bookmark className="h-4 w-4" />
+                )}
+                {isSaved ? "Saved" : "Save"}
+              </Button>
+            </div>
+          )}
         </div>
 
         <p className="mt-6 text-lg font-semibold text-ink">
@@ -247,6 +309,13 @@ export function JobDetailsView({ jobId }: { jobId: string }) {
           </div>
         </section>
       )}
+
+      <ApplyModal
+        isOpen={isApplyOpen}
+        onClose={() => setIsApplyOpen(false)}
+        jobId={job._id}
+        jobTitle={job.title}
+      />
     </div>
   );
 }
