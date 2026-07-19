@@ -14,6 +14,15 @@ export interface Education {
   year: number;
 }
 
+export interface Company {
+  name: string;
+  logo: string | null;
+  website: string | null;
+  description: string | null;
+  size: string | null;
+  industry: string | null;
+}
+
 export interface FullUser {
   _id: string;
   email: string;
@@ -31,6 +40,7 @@ export interface FullUser {
   preferredJobTypes: string[];
   preferredLocations: string[];
   preferredCategories: string[];
+  company: Company | null;
   createdAt: string;
   updatedAt: string;
 }
