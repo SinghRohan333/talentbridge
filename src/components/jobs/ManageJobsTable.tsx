@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import { Eye, Trash2, Plus } from "lucide-react";
+import { Eye, Trash2, Plus, Pencil, Users } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { getErrorMessage, cn } from "@/lib/utils";
@@ -45,7 +45,6 @@ export function ManageJobsTable() {
           ? { ...prev, jobs: prev.jobs.filter((j) => j._id !== jobId) }
           : prev,
       );
-      queryClient.invalidateQueries({ queryKey: ["jobs"] });
     } catch (err) {
       toast.error(getErrorMessage(err, "Could not delete job"));
     } finally {
@@ -122,13 +121,27 @@ export function ManageJobsTable() {
               {job.applicationCount === 1 ? "" : "s"}
             </div>
             <div className="text-sm text-ink">{formatSalaryRange(job)}</div>
-            <div className="flex items-center gap-2 sm:justify-end">
+            <div className="flex flex-wrap items-center gap-2 sm:justify-end">
               <Link
                 href={`/jobs/${job._id}`}
                 className="flex h-9 w-9 items-center justify-center rounded-lg border border-line text-ink hover:bg-line/30"
                 aria-label="View job"
               >
                 <Eye className="h-4 w-4" />
+              </Link>
+              <Link
+                href={`/jobs/manage/${job._id}/applicants`}
+                className="flex h-9 w-9 items-center justify-center rounded-lg border border-line text-ink hover:bg-line/30"
+                aria-label="View applicants"
+              >
+                <Users className="h-4 w-4" />
+              </Link>
+              <Link
+                href={`/jobs/${job._id}/edit`}
+                className="flex h-9 w-9 items-center justify-center rounded-lg border border-line text-ink hover:bg-line/30"
+                aria-label="Edit job"
+              >
+                <Pencil className="h-4 w-4" />
               </Link>
               <Button
                 type="button"
