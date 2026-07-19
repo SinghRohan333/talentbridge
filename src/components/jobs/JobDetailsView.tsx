@@ -53,14 +53,14 @@ function JobDetailsSkeleton() {
 }
 
 export function JobDetailsView({ jobId }: { jobId: string }) {
-  const { data, isLoading, isError } = useJobDetails(jobId);
+  const { data, isPending, isError } = useJobDetails(jobId);
   const { user } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
   const [isSaving, setIsSaving] = useState(false);
   const [isApplyOpen, setIsApplyOpen] = useState(false);
 
-  if (isLoading) return <JobDetailsSkeleton />;
+  if (isPending) return <JobDetailsSkeleton />;
 
   if (isError || !data) {
     return (
