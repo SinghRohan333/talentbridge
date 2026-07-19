@@ -17,6 +17,8 @@ export function Navbar() {
   const publicLinks = [
     { href: "/", label: "Home" },
     { href: "/jobs", label: "Browse Jobs" },
+    { href: "/about", label: "About Us" },
+    { href: "/contact", label: "Contact Us" },
   ];
 
   const employerLinks = [
