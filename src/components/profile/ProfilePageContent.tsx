@@ -2,6 +2,7 @@
 
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useProfile } from "@/hooks/useProfile";
+import { ResumeUpload } from "./ResumeUpload";
 import { ProfileForm } from "./ProfileForm";
 
 export function ProfilePageContent() {
@@ -25,7 +26,10 @@ export function ProfilePageContent() {
             ))}
           </div>
         ) : (
-          <ProfileForm profile={profile} />
+          <div className="space-y-6">
+            <ResumeUpload currentResumeUrl={profile.resumeUrl} />
+            <ProfileForm profile={profile} />
+          </div>
         )}
       </main>
     </ProtectedRoute>
