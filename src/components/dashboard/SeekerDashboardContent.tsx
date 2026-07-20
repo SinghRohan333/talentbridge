@@ -7,6 +7,7 @@ import { useSeekerDashboard } from "@/hooks/useSeekerDashboard";
 import { StatCard } from "./StatCard";
 import { ApplicationStatusBadge } from "@/components/applications/ApplicationStatusBadge";
 import { JobCard } from "@/components/jobs/JobCard";
+import { RecommendationsPreview } from "./RecommendationsPreview";
 
 export function SeekerDashboardContent() {
   const { data, isPending } = useSeekerDashboard();
@@ -37,6 +38,8 @@ export function SeekerDashboardContent() {
           value={data.applicationsCount}
         />
       </div>
+
+      <RecommendationsPreview />
 
       <section>
         <div className="mb-4 flex items-center justify-between">
