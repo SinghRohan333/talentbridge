@@ -8,7 +8,7 @@ import { AdminCharts } from "./AdminCharts";
 export function AdminDashboardContent() {
   const { data, isPending } = useAdminStats();
 
-  if (isPending) {
+  if (isPending || !data) {
     return (
       <div className="space-y-6">
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
