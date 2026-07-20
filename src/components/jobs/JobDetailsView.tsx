@@ -104,6 +104,7 @@ export function JobDetailsView({ jobId }: { jobId: string }) {
         toast.success("Job saved");
       }
       queryClient.invalidateQueries({ queryKey: ["job", jobId] });
+      queryClient.invalidateQueries({ queryKey: ["saved-jobs"] });
     } catch (err) {
       toast.error(getErrorMessage(err, "Could not update saved jobs"));
     } finally {
