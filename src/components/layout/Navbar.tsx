@@ -24,6 +24,7 @@ export function Navbar() {
   const seekerLinks = [
     ...publicLinks,
     { href: "/dashboard", label: "Dashboard" },
+    { href: "/recommendations", label: "Recommendations" },
     { href: "/saved-jobs", label: "Saved Jobs" },
     { href: "/applications", label: "My Applications" },
     { href: "/profile", label: "Profile" },
