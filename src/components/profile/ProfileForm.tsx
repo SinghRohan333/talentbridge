@@ -61,8 +61,10 @@ export function ProfileForm({ profile }: { profile: FullUser }) {
 
   useEffect(() => {
     reset(buildDefaults(profile));
+    // Keyed on updatedAt (not _id) so the form re-syncs when a resume upload
+    // prefills new data server-side — _id alone would never change here.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profile._id]);
+  }, [profile.updatedAt]);
 
   const experienceArray = useFieldArray({ control, name: "experience" });
   const educationArray = useFieldArray({ control, name: "education" });
