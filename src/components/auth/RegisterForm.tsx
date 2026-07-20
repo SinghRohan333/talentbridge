@@ -11,7 +11,7 @@ import { registerFormSchema, RegisterFormValues } from "@/lib/validation/auth";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { GoogleAuthButton } from "@/components/forms/GoogleAuthButton";
-import { UserRole } from "@/types/auth";
+import { Eye, EyeOff } from "lucide-react";
 
 const roleOptions: {
   value: "seeker" | "employer";
@@ -26,6 +26,8 @@ export function RegisterForm() {
   const { register: registerUser } = useAuth();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     register,
@@ -101,20 +103,49 @@ export function RegisterForm() {
           error={errors.email?.message}
           {...register("email")}
         />
-        <Input
-          label="Password"
-          type="password"
-          autoComplete="new-password"
-          error={errors.password?.message}
-          {...register("password")}
-        />
-        <Input
-          label="Confirm password"
-          type="password"
-          autoComplete="new-password"
-          error={errors.confirmPassword?.message}
-          {...register("confirmPassword")}
-        />
+        <div className="relative">
+          <Input
+            label="Password"
+            type={showPassword ? "text" : "password"}
+            autoComplete="new-password"
+            error={errors.password?.message}
+            {...register("password")}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-[38px] text-slate hover:text-slate/80 focus:outline-none"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? (
+              <EyeOff className="h-5 w-5" />
+            ) : (
+              <Eye className="h-5 w-5" />
+            )}
+          </button>
+        </div>
+
+        <div className="relative">
+          <Input
+            label="Confirm password"
+            type={showConfirmPassword ? "text" : "password"}
+            autoComplete="new-password"
+            error={errors.confirmPassword?.message}
+            {...register("confirmPassword")}
+          />
+          <button
+            type="button"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            className="absolute right-3 top-[38px] text-slate hover:text-slate/80 focus:outline-none"
+            aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+          >
+            {showConfirmPassword ? (
+              <EyeOff className="h-5 w-5" />
+            ) : (
+              <Eye className="h-5 w-5" />
+            )}
+          </button>
+        </div>
         <Button type="submit" isLoading={isSubmitting} fullWidth>
           Create account
         </Button>
