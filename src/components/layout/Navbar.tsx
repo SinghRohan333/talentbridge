@@ -37,12 +37,21 @@ export function Navbar() {
     { href: "/employer/company", label: "Company Profile" },
   ];
 
+  const adminLinks = [
+    ...publicLinks,
+    { href: "/admin/dashboard", label: "Dashboard" },
+    { href: "/admin/users", label: "Users" },
+    { href: "/admin/jobs", label: "Job Moderation" },
+  ];
+
   const navLinks =
     user?.role === "seeker"
       ? seekerLinks
       : user?.role === "employer"
         ? employerLinks
-        : publicLinks;
+        : user?.role === "admin"
+          ? adminLinks
+          : publicLinks;
 
   const handleLogout = async () => {
     await logout();
